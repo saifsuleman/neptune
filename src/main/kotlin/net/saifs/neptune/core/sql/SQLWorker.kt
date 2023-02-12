@@ -1,33 +1,42 @@
 package net.saifs.neptune.core.sql
 
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.suspendCancellableCoroutine
 import java.sql.PreparedStatement
 import java.sql.ResultSet
 import java.util.concurrent.CompletableFuture
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
 
 class SQLWorker(private val connector: HikariDatabaseConnector) {
-    fun query(query: String): CompletableFuture<ResultSet> = CompletableFuture.supplyAsync {
+    private suspend fun <T> execute(provider: () -> T): T {
+        return suspendCancellableCoroutine { cont ->
+            runCatching(provider).fold(cont::resume, cont::resumeWithException)
+        }
+    }
+
+    suspend fun query(query: String): ResultSet = execute {
         connector.getConnection().use { connection ->
             connection.prepareStatement(query).use { statement ->
-                statement.executeQuery()
+                return@execute statement.executeQuery()
             }
         }
     }
 
-    fun query(query: String, statementConsumer: (PreparedStatement) -> Unit): CompletableFuture<ResultSet> =
-        CompletableFuture.supplyAsync {
-            connector.getConnection().use { connection ->
-                connection.prepareStatement(query).use { statement ->
-                    statementConsumer(statement)
-                    statement.executeQuery()
-                }
+    suspend fun query(query: String, statementConsumer: (PreparedStatement) -> Unit): ResultSet = execute {
+        connector.getConnection().use { connection ->
+            connection.prepareStatement(query).use { statement ->
+                statementConsumer(statement)
+                return@execute statement.executeQuery()
             }
         }
+    }
 
-    fun query(query: String, params: List<Any>): CompletableFuture<ResultSet> = query(query) {
+    suspend fun query(query: String, params: List<Any>): ResultSet = query(query) {
         populateStatement(it, params)
     }
 
-    fun update(query: String): CompletableFuture<Int> = CompletableFuture.supplyAsync {
+    suspend fun update(query: String): Int = execute {
         connector.getConnection().use { connection ->
             connection.prepareStatement(query).use { statement ->
                 statement.executeUpdate()
@@ -35,8 +44,7 @@ class SQLWorker(private val connector: HikariDatabaseConnector) {
         }
     }
 
-    fun update(query: String, statementConsumer: (PreparedStatement) -> Unit): CompletableFuture<Int> =
-        CompletableFuture.supplyAsync {
+    suspend fun update(query: String, statementConsumer: (PreparedStatement) -> Unit): Int = execute {
             connector.getConnection().use { connection ->
                 connection.prepareStatement(query).use { statement ->
                     statementConsumer(statement)
@@ -45,18 +53,18 @@ class SQLWorker(private val connector: HikariDatabaseConnector) {
             }
         }
 
-    fun update(query: String, params: List<Any>): CompletableFuture<Int> = update(query) {
+    suspend fun update(query: String, params: List<Any>): Int = update(query) {
         populateStatement(it, params)
     }
 
-    fun updateBatch(query: String, statementConsumer: (PreparedStatement) -> Unit): CompletableFuture<Unit> = CompletableFuture.supplyAsync {
-        connector.getConnection().use { connection ->
-            connection.prepareStatement(query).use { statement ->
-                statementConsumer(statement)
-                statement.executeBatch()
+    suspend fun updateBatch(query: String, statementConsumer: (PreparedStatement) -> Unit): Unit = execute {
+            connector.getConnection().use { connection ->
+                connection.prepareStatement(query).use { statement ->
+                    statementConsumer(statement)
+                    statement.executeBatch()
+                }
             }
         }
-    }
 
     private fun populateStatement(statement: PreparedStatement, params: List<Any>) {
         for (i in 0..params.size) {

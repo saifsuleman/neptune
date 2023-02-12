@@ -1,7 +1,9 @@
 package net.saifs.neptune.core.command
 
+import cloud.commandframework.CloudCapability
 import cloud.commandframework.CommandManager
 import cloud.commandframework.annotations.AnnotationParser
+import cloud.commandframework.arguments.StaticArgument
 import cloud.commandframework.arguments.parser.ParserParameters
 import cloud.commandframework.arguments.parser.StandardParameters
 import cloud.commandframework.arguments.standard.StringArgument
@@ -34,7 +36,7 @@ class NeptuneCommandManager(module: NeptuneModule) {
         }
     }
 
-    private val commandManager: PaperCommandManager<CommandSender> = PaperCommandManager(
+    private var commandManager: PaperCommandManager<CommandSender> = PaperCommandManager(
         Neptune.instance,
         AsynchronousCommandExecutionCoordinator.simpleCoordinator(),
         Function.identity(),
@@ -49,6 +51,7 @@ class NeptuneCommandManager(module: NeptuneModule) {
 
     init {
         commandManager.registerBrigadier()
+
         commandManager.setSetting(CommandManager.ManagerSettings.ALLOW_UNSAFE_REGISTRATION, true)
         commandManager.setSetting(CommandManager.ManagerSettings.OVERRIDE_EXISTING_COMMANDS, true)
 
@@ -61,19 +64,22 @@ class NeptuneCommandManager(module: NeptuneModule) {
             .apply(commandManager) { it }
 
         annotationParser.parse(module)
+        syncCommands()
     }
 
     fun close() {
-        val server = Bukkit.getServer()
-
         for (cmd in commandManager.rootCommands()) {
-            server.commandMap.knownCommands.remove(cmd)
+            commandManager.deleteRootCommand(cmd)
         }
 
-        (server as CraftServer).syncCommands()
+        syncCommands()
     }
 
-    fun registerHelp(root: String, vararg aliases: String) {
+    private fun syncCommands() {
+        (Bukkit.getServer() as CraftServer).syncCommands()
+    }
+
+    internal fun registerHelp(root: String, vararg aliases: String) {
         val help = MinecraftHelp("/$root help", { it }, commandManager)
         help.helpColors = MinecraftHelp.HelpColors.of(
             TextColor.color(240, 81, 226), // Primary
@@ -92,5 +98,6 @@ class NeptuneCommandManager(module: NeptuneModule) {
                     help.queryCommands(query, it.sender)
                 }.build()
         )
+        syncCommands()
     }
 }

@@ -23,11 +23,21 @@ class EconomyModule : NeptuneModule() {
     }
 
     @CommandMethod("balance|bal <player>")
-    @CommandDescription("Views yours or other players balance")
-    fun balanceCommand(sender: CommandSender, @Argument("player") player: Player) {
+    @CommandDescription("Views other players balance")
+    fun balanceOtherCommand(sender: CommandSender, @Argument("player") player: Player) {
         val balance = currency[player]
+        sender.sendMessage(parseMini("<#68ed90><bold>ECONOMY</bold> <gray>$DOUBLE_RIGHT_ARROW</gray> <player>'s balance is $<balance>", mutableMapOf(
+            Pair("balance", Component.text(formatNumber(balance))),
+            Pair("player", player.displayName())
+        )))
+    }
+
+    @CommandMethod("balance|bal")
+    @CommandDescription("Views your balance")
+    fun balanceCommand(sender: Player) {
+        val balance = currency[sender]
         sender.sendMessage(parseMini("<#68ed90><bold>ECONOMY</bold> <gray>$DOUBLE_RIGHT_ARROW</gray> $<balance>", mutableMapOf(
-           Pair("balance", Component.text(formatNumber(balance)))
+            Pair("balance", Component.text(formatNumber(balance))),
         )))
     }
 

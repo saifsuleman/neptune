@@ -14,6 +14,7 @@ import org.bukkit.scheduler.BukkitTask
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.lang.IllegalArgumentException
+import java.lang.reflect.Field
 import kotlin.reflect.KClass
 import kotlin.reflect.cast
 
@@ -57,30 +58,10 @@ abstract class AbstractModule {
 abstract class NeptuneModule : AbstractModule() {
     val sql = Neptune.instance.sqlWorker
     protected val modules = Neptune.instance.modulesManager
-    protected val menus = Neptune.instance.menuSystem
     private var commandManager: NeptuneCommandManager? = null
 
     fun getServer(): Server = pluginInstance().server
 
-    fun runTaskTimer(delay: Long, period: Long, callback: () -> Unit): BukkitTask {
-        val runnable = getServer().scheduler.runTaskTimer(pluginInstance(), callback, delay, period)
-        onClose {
-            if (!runnable.isCancelled) {
-                runnable.cancel()
-            }
-        }
-        return runnable
-    }
-
-    fun runTaskTimerAsync(delay: Long, period: Long, callback: () -> Unit): BukkitTask {
-        val runnable = getServer().scheduler.runTaskTimerAsynchronously(pluginInstance(), callback, delay, period)
-        onClose {
-            if (!runnable.isCancelled) {
-                runnable.cancel()
-            }
-        }
-        return runnable
-    }
 
     fun registerCommands(): NeptuneCommandManager {
         if (commandManager != null) {
@@ -88,39 +69,10 @@ abstract class NeptuneModule : AbstractModule() {
         }
 
         commandManager = NeptuneCommandManager(this)
-        (Bukkit.getServer() as CraftServer).syncCommands()
         onClose {
             commandManager!!.close()
         }
         return commandManager!!
-    }
-
-    fun runTaskTimer(period: Long, callback: () -> Unit): BukkitTask = runTaskTimer(0, period, callback)
-
-    fun runTaskTimer(callback: () -> Unit): BukkitTask = runTaskTimer(0, 0, callback)
-
-    fun runTaskTimerAsync(period: Long, callback: () -> Unit): BukkitTask = runTaskTimerAsync(0, period, callback)
-
-    fun runTaskTimerAsync(callback: () -> Unit): BukkitTask = runTaskTimerAsync(0, 0, callback)
-
-    fun runTask(callback: () -> Unit): BukkitTask {
-        val runnable = getServer().scheduler.runTask(pluginInstance(), callback)
-        onClose {
-            if (!runnable.isCancelled) {
-                runnable.cancel()
-            }
-        }
-        return runnable
-    }
-
-    fun runTaskAsync(callback: () -> Unit): BukkitTask {
-        val runnable = getServer().scheduler.runTaskAsynchronously(pluginInstance(), callback)
-        onClose {
-            if (!runnable.isCancelled) {
-                runnable.cancel()
-            }
-        }
-        return runnable
     }
 
     inline fun <reified T : Event> subscribe(noinline callback: (T) -> Unit): ModuleEventListener<T> = subscribe(T::class, callback)

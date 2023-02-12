@@ -68,20 +68,22 @@ class ModulesManager(private val plugin: Neptune) {
             terminable()
         }
 
+        module.terminables.clear()
+
         broadcast("<#426ff5>Unloaded module <#b6bbcc>" + module.getId(), "neptune.admin")
 
         return clazz.cast(module)
     }
 
+    fun <T : NeptuneModule> isLoaded(clazz: KClass<T>): Boolean {
+        return modules.containsKey(clazz)
+    }
+
+    fun <T : NeptuneModule> isLoaded(module: T): Boolean = isLoaded(module::class)
+
     inline fun <reified T> unload(): T where T : NeptuneModule = unload(T::class)
 
-    internal fun close() {
-        for (module in modules.values) {
-            for (terminable in module.terminables) {
-                terminable()
-            }
-        }
+    fun <T : NeptuneModule> unload(module: T): T = unload(module::class)
 
-        modules.clear()
-    }
+    internal fun close() = modules.values.forEach(::unload)
 }

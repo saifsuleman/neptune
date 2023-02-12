@@ -1,4 +1,5 @@
 plugins {
+    `java-library`
     kotlin("jvm") version "1.7.10"
     id("com.github.johnrengelman.shadow") version "6.1.0"
     id("io.papermc.paperweight.userdev") version "1.3.8"
@@ -33,9 +34,11 @@ dependencies {
     implementation("cloud.commandframework:cloud-minecraft-extras:1.8.0")
 
     api("com.zaxxer:HikariCP:5.0.0")
+    api("net.wesjd:anvilgui:1.5.3-SNAPSHOT")
 
     compileOnly("io.papermc.paper:paper-api:1.19.3-R0.1-SNAPSHOT")
     compileOnly("com.comphenix.protocol:ProtocolLib:4.7.0")
+
 
     paperweightDevelopmentBundle("io.papermc.paper:dev-bundle:1.19.3-R0.1-SNAPSHOT")
 }

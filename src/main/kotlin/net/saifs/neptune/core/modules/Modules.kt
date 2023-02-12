@@ -57,7 +57,8 @@ abstract class AbstractModule {
 abstract class NeptuneModule : AbstractModule() {
     val sql = Neptune.instance.sqlWorker
     protected val modules = Neptune.instance.modulesManager
-    protected var commandManager: NeptuneCommandManager? = null
+    protected val menus = Neptune.instance.menuSystem
+    private var commandManager: NeptuneCommandManager? = null
 
     fun getServer(): Server = pluginInstance().server
 

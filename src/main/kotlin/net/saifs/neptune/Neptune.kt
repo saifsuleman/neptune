@@ -1,15 +1,20 @@
 package net.saifs.neptune
 
+import net.saifs.neptune.core.gui.MenuSystem
 import net.saifs.neptune.core.modules.ModulesManager
 import net.saifs.neptune.core.sql.HikariDatabaseConnector
 import net.saifs.neptune.core.sql.SQLWorker
 import net.saifs.neptune.modules.EconomyModule
+import net.saifs.neptune.modules.TestMenusModule
 import org.bukkit.plugin.java.JavaPlugin
 
 class Neptune : JavaPlugin() {
     lateinit var modulesManager: ModulesManager
         private set
     lateinit var sqlWorker: SQLWorker
+        private set
+
+    lateinit var menuSystem: MenuSystem
         private set
 
     companion object {
@@ -19,6 +24,7 @@ class Neptune : JavaPlugin() {
 
     override fun onEnable() {
         instance = this
+        menuSystem = MenuSystem()
         modulesManager = ModulesManager(this)
 
         saveDefaultConfig()
@@ -33,6 +39,7 @@ class Neptune : JavaPlugin() {
         sqlWorker = SQLWorker(HikariDatabaseConnector("jdbc:mysql://$ip:$port/$database", username, password))
 
         modulesManager.load<EconomyModule>()
+        modulesManager.load<TestMenusModule>()
     }
 
     override fun onDisable() {

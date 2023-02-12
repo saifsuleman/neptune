@@ -1,10 +1,8 @@
-package net.saifs.neptune.core.sql
+package net.saifs.neptune.sql
 
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.suspendCancellableCoroutine
 import java.sql.PreparedStatement
 import java.sql.ResultSet
-import java.util.concurrent.CompletableFuture
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 
@@ -67,7 +65,7 @@ class SQLWorker(private val connector: HikariDatabaseConnector) {
         }
 
     private fun populateStatement(statement: PreparedStatement, params: List<Any>) {
-        for (i in 0..params.size) {
+        for (i in params.indices) {
             statement.setObject(i + 1, params[i])
         }
     }

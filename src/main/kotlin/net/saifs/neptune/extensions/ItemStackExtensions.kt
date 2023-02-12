@@ -1,4 +1,4 @@
-package net.saifs.neptune.core.extensions
+package net.saifs.neptune.extensions
 
 import net.kyori.adventure.text.Component
 import net.saifs.neptune.util.parseMini

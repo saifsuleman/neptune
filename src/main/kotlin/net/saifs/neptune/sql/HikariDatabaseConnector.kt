@@ -1,9 +1,8 @@
-package net.saifs.neptune.core.sql
+package net.saifs.neptune.sql
 
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 import java.sql.Connection
-import java.sql.SQLException
 import java.util.concurrent.TimeUnit
 
 

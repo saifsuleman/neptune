@@ -1,4 +1,4 @@
-package net.saifs.neptune.core.scheduling
+package net.saifs.neptune.scheduling
 
 import kotlinx.coroutines.*
 import kotlinx.coroutines.Runnable

@@ -1,15 +1,14 @@
-package net.saifs.neptune.modules
+package net.saifs.neptune.modulestest
 
 import kotlinx.coroutines.runBlocking
-import net.saifs.neptune.core.modules.ModuleData
-import net.saifs.neptune.core.modules.NeptuneModule
+import net.saifs.neptune.modules.ModuleData
+import net.saifs.neptune.modules.NeptuneModule
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent
 import java.util.UUID
-import kotlinx.coroutines.async
-import net.saifs.neptune.core.scheduling.SynchronizationContext
-import net.saifs.neptune.core.scheduling.schedule
+import net.saifs.neptune.scheduling.SynchronizationContext
+import net.saifs.neptune.scheduling.schedule
 
 const val DEFAULT_BALANCE = 200
 
@@ -68,8 +67,21 @@ class Currency internal constructor(val name: String, private val module: Curren
     }
 
     suspend fun getLeaderboard(start: Int, end: Int): List<Pair<UUID, Float>> {
-        val results = module.sql.query("SELECT uuid, balance FROM currencies WHERE currency = ?")
-        return mutableListOf()
+        val results = module.sql.query("SELECT uuid, balance FROM currencies WHERE currency = ? ORDER BY balance DESC LIMIT ? OFFSET ?", listOf(
+            name,
+            end - start,
+            start
+        ))
+        val ret = mutableListOf<Pair<UUID, Float>>()
+
+        while (results.next()) {
+            val uuid = results.getString(1)
+            val balance = results.getFloat(2)
+
+            ret.add(Pair<UUID, Float>(UUID.fromString(uuid), balance))
+        }
+
+        return ret
     }
 
     operator fun get(player: Player): Float = get(player.uniqueId)

@@ -1,6 +1,6 @@
-package net.saifs.neptune.core.scheduling
+package net.saifs.neptune.scheduling
 
-import net.saifs.neptune.core.modules.NeptuneModule
+import net.saifs.neptune.modules.NeptuneModule
 import org.bukkit.Bukkit
 import org.bukkit.plugin.Plugin
 import org.bukkit.scheduler.BukkitScheduler
@@ -75,7 +75,7 @@ class BukkitSchedulerController(val plugin: Plugin, val scheduler: BukkitSchedul
     }
 
     suspend fun newContext(context: SynchronizationContext): Unit = suspendCoroutine { cont ->
-        schedulerDelegate.forceNewContext(context, { cont.resume(Unit) })
+        schedulerDelegate.forceNewContext(context) { cont.resume(Unit) }
     }
 
     suspend fun repeating(resolution: Long): Long = suspendCoroutine { cont ->

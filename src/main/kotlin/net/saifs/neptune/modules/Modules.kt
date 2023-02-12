@@ -1,20 +1,16 @@
-package net.saifs.neptune.core.modules
+package net.saifs.neptune.modules
 
 import net.saifs.neptune.Neptune
-import net.saifs.neptune.core.command.NeptuneCommandManager
-import org.bukkit.Bukkit
+import net.saifs.neptune.command.NeptuneCommandManager
 import org.bukkit.Server
-import org.bukkit.craftbukkit.v1_19_R2.CraftServer
 import org.bukkit.event.Event
 import org.bukkit.event.EventPriority
 import org.bukkit.event.HandlerList
 import org.bukkit.event.Listener
 import org.bukkit.plugin.EventExecutor
-import org.bukkit.scheduler.BukkitTask
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.lang.IllegalArgumentException
-import java.lang.reflect.Field
 import kotlin.reflect.KClass
 import kotlin.reflect.cast
 
@@ -61,7 +57,6 @@ abstract class NeptuneModule : AbstractModule() {
     private var commandManager: NeptuneCommandManager? = null
 
     fun getServer(): Server = pluginInstance().server
-
 
     fun registerCommands(): NeptuneCommandManager {
         if (commandManager != null) {

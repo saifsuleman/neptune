@@ -1,8 +1,8 @@
 package net.saifs.neptune
 
-import net.saifs.neptune.core.modules.ModulesManager
-import net.saifs.neptune.core.sql.HikariDatabaseConnector
-import net.saifs.neptune.core.sql.SQLWorker
+import net.saifs.neptune.modules.ModulesManager
+import net.saifs.neptune.sql.HikariDatabaseConnector
+import net.saifs.neptune.sql.SQLWorker
 import org.bukkit.plugin.java.JavaPlugin
 
 class Neptune : JavaPlugin() {

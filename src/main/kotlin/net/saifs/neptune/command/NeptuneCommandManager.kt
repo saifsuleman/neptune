@@ -1,13 +1,10 @@
-package net.saifs.neptune.core.command
+package net.saifs.neptune.command
 
-import cloud.commandframework.CloudCapability
 import cloud.commandframework.CommandManager
 import cloud.commandframework.annotations.AnnotationParser
-import cloud.commandframework.arguments.StaticArgument
 import cloud.commandframework.arguments.parser.ParserParameters
 import cloud.commandframework.arguments.parser.StandardParameters
 import cloud.commandframework.arguments.standard.StringArgument
-import cloud.commandframework.exceptions.InvalidSyntaxException
 import cloud.commandframework.exceptions.NoPermissionException
 import cloud.commandframework.execution.AsynchronousCommandExecutionCoordinator
 import cloud.commandframework.meta.CommandMeta
@@ -18,11 +15,10 @@ import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.TextColor
 import net.kyori.adventure.text.minimessage.MiniMessage
 import net.saifs.neptune.Neptune
-import net.saifs.neptune.core.modules.NeptuneModule
+import net.saifs.neptune.modules.NeptuneModule
 import org.bukkit.Bukkit
 import org.bukkit.command.CommandSender
 import org.bukkit.craftbukkit.v1_19_R2.CraftServer
-import org.bukkit.plugin.PluginManager
 import java.util.function.Function
 
 class NeptuneCommandManager(module: NeptuneModule) {

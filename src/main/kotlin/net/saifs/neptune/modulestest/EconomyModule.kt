@@ -1,15 +1,18 @@
-package net.saifs.neptune.modules
+package net.saifs.neptune.modulestest
 
 import cloud.commandframework.annotations.Argument
 import cloud.commandframework.annotations.CommandDescription
 import cloud.commandframework.annotations.CommandMethod
 import cloud.commandframework.annotations.CommandPermission
 import net.kyori.adventure.text.Component
-import net.saifs.neptune.core.modules.ModuleData
-import net.saifs.neptune.core.modules.NeptuneModule
+import net.saifs.neptune.modules.ModuleData
+import net.saifs.neptune.modules.NeptuneModule
+import net.saifs.neptune.scheduling.SynchronizationContext
+import net.saifs.neptune.scheduling.schedule
 import net.saifs.neptune.util.DOUBLE_RIGHT_ARROW
 import net.saifs.neptune.util.formatNumber
 import net.saifs.neptune.util.parseMini
+import org.bukkit.Bukkit
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 
@@ -20,6 +23,31 @@ class EconomyModule : NeptuneModule() {
     override fun init() {
         currency = modules.get<CurrenciesModule>().newCurrency("money")
         registerCommands().registerHelp("economy", "eco")
+    }
+
+    @CommandMethod("baltop [page]")
+    @CommandDescription("Views the baltop")
+    fun baltopCommand(sender: CommandSender, @Argument("page", defaultValue = "1") page: Int) {
+        schedule(SynchronizationContext.ASYNC) {
+            val baltop = currency.getLeaderboard((page - 1) * 15, page * 15)
+            if (baltop.isEmpty()) {
+                sender.sendMessage(parseMini("<#68ed90><bold>ECONOMY</bold> <gray>$DOUBLE_RIGHT_ARROW</gray><red> There are no entries on the baltop!"))
+                return@schedule
+            }
+
+            val components = mutableListOf(parseMini("<#68ed90><bold>BALANCE TOP:"))
+            for ((i, pair) in baltop.withIndex()) {
+                val (uuid, balance) = pair
+                val playerName = Bukkit.getOfflinePlayer(uuid).name ?: "null"
+                components.add(parseMini("<gray><num>.</gray> <#68ed90><player><gray>:</gray> <balance>", mutableMapOf(
+                    Pair("num", Component.text(formatNumber(i + 1 + ((page-1) * 15)))),
+                    Pair("player", Component.text(playerName)),
+                    Pair("balance", Component.text("$${formatNumber(balance)}"))
+                )))
+            }
+
+            components.forEach(sender::sendMessage)
+        }
     }
 
     @CommandMethod("balance|bal <player>")

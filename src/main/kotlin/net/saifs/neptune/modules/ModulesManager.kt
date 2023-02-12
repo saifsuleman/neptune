@@ -1,4 +1,4 @@
-package net.saifs.neptune.core.modules
+package net.saifs.neptune.modules
 
 import net.saifs.neptune.Neptune
 import net.saifs.neptune.util.broadcast
@@ -7,7 +7,7 @@ import kotlin.reflect.KClass
 import kotlin.reflect.cast
 
 class ModulesManager(private val plugin: Neptune) {
-    private val modules: MutableMap<KClass<*>, NeptuneModule> = mutableMapOf()
+    private val modules: MutableMap<KClass<out NeptuneModule>, NeptuneModule> = mutableMapOf()
 
     inline fun <reified T> get(): T where T : NeptuneModule = get(T::class)
 

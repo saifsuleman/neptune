@@ -5,6 +5,7 @@ import net.kyori.adventure.text.minimessage.MiniMessage
 import net.kyori.adventure.text.minimessage.tag.Tag
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver
 import org.bukkit.Bukkit
+import org.bukkit.entity.Player
 
 fun broadcast(component: Component, permission: String) {
     for (player in Bukkit.getOnlinePlayers()) {
@@ -30,4 +31,12 @@ fun parseMini(string: String, placeholders: Map<String, Component>): Component {
     }
 
     return MiniMessage.miniMessage().deserialize(string, resolver.build())
+}
+
+fun Player.sendMini(string: String) {
+    sendMessage(parseMini(string))
+}
+
+fun Player.sendMini(string: String, placeholders: Map<String, Component>) {
+    sendMessage(parseMini(string, placeholders))
 }

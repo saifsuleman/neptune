@@ -1,5 +1,6 @@
 package net.saifs.neptune
 
+import net.saifs.neptune.menu.MenuManager
 import net.saifs.neptune.modules.ModulesManager
 import net.saifs.neptune.sql.HikariDatabaseConnector
 import net.saifs.neptune.sql.SQLWorker
@@ -7,17 +8,16 @@ import org.bukkit.plugin.java.JavaPlugin
 
 class Neptune : JavaPlugin() {
     lateinit var modulesManager: ModulesManager
-        private set
     lateinit var sqlWorker: SQLWorker
-        private set
+    lateinit var menuManager: MenuManager
 
     companion object {
         lateinit var instance: Neptune
-            private set
     }
 
     override fun onEnable() {
         instance = this
+        menuManager = MenuManager()
         modulesManager = ModulesManager(this)
 
         saveDefaultConfig()

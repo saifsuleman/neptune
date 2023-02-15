@@ -46,3 +46,5 @@ fun stackOf(material: Material, block: StackBuilder.() -> Unit): ItemStack {
     builder.apply(block)
     return builder.build()
 }
+
+fun stackOf(material: Material, amount: Int = 1): ItemStack = stackOf(material) { amount(amount) }

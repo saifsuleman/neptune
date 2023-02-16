@@ -11,6 +11,7 @@ import org.bukkit.plugin.EventExecutor
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.lang.IllegalArgumentException
+import java.nio.file.Path
 import kotlin.reflect.KClass
 import kotlin.reflect.cast
 
@@ -41,6 +42,18 @@ abstract class AbstractModule {
     fun onClose(callback: () -> Unit) {
         terminables.add(callback)
     }
+
+    fun <T> config(clazz: Class<T>): T {
+        val configManager = Neptune.instance.configManager
+        if (!configManager.isConfigLoaded(clazz)) {
+            configManager.initConfig(Path.of("configs/${getId()}"), clazz)
+        }
+        return configManager.getConfig(clazz)
+    }
+
+    fun <T: Any> config(clazz: KClass<T>): T = config(clazz.java)
+
+    inline fun <reified T : Any> config(): T = config(T::class)
 
     private fun resolveData(): ModuleData {
         if (!this.javaClass.isAnnotationPresent(ModuleData::class.java)) {

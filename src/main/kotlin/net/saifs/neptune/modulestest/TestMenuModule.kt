@@ -4,43 +4,23 @@ import cloud.commandframework.annotations.CommandMethod
 import net.saifs.neptune.extensions.stackOf
 import net.saifs.neptune.modules.ModuleData
 import net.saifs.neptune.modules.NeptuneModule
-import net.saifs.neptune.scheduling.SynchronizationContext
-import net.saifs.neptune.scheduling.schedule
-import net.saifs.neptune.util.parseMini
+import net.saifs.neptune.util.sendMini
 import org.bukkit.Material
 import org.bukkit.entity.Player
+import org.spongepowered.configurate.objectmapping.ConfigSerializable
 
 @ModuleData("test-menus")
 class TestMenuModule : NeptuneModule() {
     private val menu = menus.newMenu {
         size(27)
-
-        title("<rainbow>Hello there!")
-
-        fill(stackOf(Material.BLACK_STAINED_GLASS_PANE) {
-            name("<gray>")
-        })
-
-        partition("0 0010101") {
-            slot(stackOf(Material.DIAMOND) {
-                name("<rainbow>the first one")
-            })
-
-            slot(stackOf(Material.DIRT) {
-                name("<rainbow>the second one")
-            })
-
-            slot(stackOf(Material.COAL) {
-                name("<rainbow>the third one")
-            }) {
-                schedule(SynchronizationContext.ASYNC) {
-
-                }
-            }
+        fill(stackOf(Material.BLACK_STAINED_GLASS_PANE))
+        slot(1, 2, stackOf(Material.DIAMOND)) {
+            it.player.sendMessage("you just clicked!!!")
         }
     }
 
     override fun init() {
+        config<TestConfig>()
         registerCommands()
     }
 
@@ -48,4 +28,14 @@ class TestMenuModule : NeptuneModule() {
     fun testMenus(player: Player) {
         menu.open(player)
     }
+
+    @CommandMethod("testing")
+    fun testCommand(player: Player) {
+        player.sendMini(config<TestConfig>().msg)
+    }
+}
+
+@ConfigSerializable
+class TestConfig {
+    var msg: String = "<rainbow>example test"
 }

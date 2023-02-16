@@ -19,9 +19,21 @@ class StackBuilder internal constructor(material: Material) {
         }
     }
 
-    fun lore(lore: List<Component>) {
+    fun lore(vararg lore: String) {
+        val list = mutableListOf<Component>()
+
+        for (line in lore) {
+            list.add(parseMini(line))
+        }
+
         meta<ItemMeta> {
-            lore(lore)
+            lore(list)
+        }
+    }
+
+    fun lore(vararg lore: Component) {
+        meta<ItemMeta> {
+            lore(listOf(*lore))
         }
     }
 

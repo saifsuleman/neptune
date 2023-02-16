@@ -1,6 +1,7 @@
 package net.saifs.neptune.modulestest
 
 import kotlinx.coroutines.runBlocking
+import net.saifs.neptune.Neptune
 import net.saifs.neptune.modules.ModuleData
 import net.saifs.neptune.modules.NeptuneModule
 import org.bukkit.Bukkit
@@ -10,7 +11,7 @@ import java.util.UUID
 import net.saifs.neptune.scheduling.SynchronizationContext
 import net.saifs.neptune.scheduling.schedule
 
-const val DEFAULT_BALANCE = 200
+fun currencies() = Neptune.instance.modulesManager.get<CurrenciesModule>()
 
 @ModuleData("currencies")
 class CurrenciesModule : NeptuneModule() {
@@ -28,7 +29,12 @@ class CurrenciesModule : NeptuneModule() {
                 )
             """.trimIndent())
         }
-        subscribe<AsyncPlayerPreLoginEvent> { runBlocking { loadPlayer(it.uniqueId) } }
+
+        subscribe<AsyncPlayerPreLoginEvent> {
+            runBlocking {
+                loadPlayer(it.uniqueId)
+            }
+        }
     }
 
     private suspend fun loadPlayer(uuid: UUID) {
@@ -54,6 +60,7 @@ class Currency internal constructor(val name: String, private val module: Curren
         if (data.containsKey(uuid)) {
             return
         }
+
         val results = module.sql.query("SELECT balance FROM currencies WHERE uuid = ? AND currency = ?") {
             it.setString(1, uuid.toString())
             it.setString(2, name)

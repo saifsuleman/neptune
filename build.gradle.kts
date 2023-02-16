@@ -32,6 +32,7 @@ dependencies {
     implementation("cloud.commandframework:cloud-paper:1.8.0")
     implementation("cloud.commandframework:cloud-annotations:1.8.0")
     implementation("cloud.commandframework:cloud-minecraft-extras:1.8.0")
+    implementation("org.spongepowered:configurate-gson:4.1.2")
 
     api("com.zaxxer:HikariCP:5.0.0")
     api("net.wesjd:anvilgui:1.5.3-SNAPSHOT")

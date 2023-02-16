@@ -21,7 +21,7 @@ class EconomyModule : NeptuneModule() {
     private lateinit var currency: Currency
 
     override fun init() {
-        currency = modules.get<CurrenciesModule>().newCurrency("money")
+        currency = currencies().newCurrency("money")
         registerCommands().registerHelp("economy", "eco")
     }
 

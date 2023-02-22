@@ -1,17 +1,17 @@
 package net.saifs.neptune.scheduling
 
-import net.saifs.neptune.modules.NeptuneModule
+import net.saifs.neptune.NeptunePlugin
 import org.bukkit.Bukkit
 import org.bukkit.plugin.Plugin
 import org.bukkit.scheduler.BukkitScheduler
 import org.bukkit.scheduler.BukkitTask
 import kotlin.coroutines.*
 
-fun NeptuneModule.schedule(
+fun NeptunePlugin.schedule(
     initialContext: SynchronizationContext = SynchronizationContext.SYNC,
     co: suspend BukkitSchedulerController.() -> Unit
 ): CoroutineTask {
-    val task = getServer().scheduler.schedule(pluginInstance(), initialContext, co)
+    val task = getServer().scheduler.schedule(this, initialContext, co)
     onClose {
         task.cancel()
     }

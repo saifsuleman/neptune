@@ -14,14 +14,13 @@ import cloud.commandframework.paper.PaperCommandManager
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.TextColor
 import net.kyori.adventure.text.minimessage.MiniMessage
-import net.saifs.neptune.Neptune
-import net.saifs.neptune.modules.NeptuneModule
+import net.saifs.neptune.NeptunePlugin
 import org.bukkit.Bukkit
 import org.bukkit.command.CommandSender
 import org.bukkit.craftbukkit.v1_19_R2.CraftServer
 import java.util.function.Function
 
-class NeptuneCommandManager(module: NeptuneModule) {
+class NeptuneCommandManager(plugin: NeptunePlugin) {
     companion object {
         private val NO_PERMISSION_FUNCTION: (Exception) -> Component = {
             MiniMessage.miniMessage()
@@ -33,7 +32,7 @@ class NeptuneCommandManager(module: NeptuneModule) {
     }
 
     private var commandManager: PaperCommandManager<CommandSender> = PaperCommandManager(
-        Neptune.instance,
+        plugin,
         AsynchronousCommandExecutionCoordinator.simpleCoordinator(),
         Function.identity(),
         Function.identity()
@@ -58,9 +57,12 @@ class NeptuneCommandManager(module: NeptuneModule) {
             .withCommandExecutionHandler()
             .withHandler(MinecraftExceptionHandler.ExceptionType.NO_PERMISSION, NO_PERMISSION_FUNCTION)
             .apply(commandManager) { it }
+    }
 
-        annotationParser.parse(module)
-        syncCommands()
+    fun <T : Any> registerCommands(clazz: Class<T>) {
+        val constructor = clazz.getDeclaredConstructor()
+        val instance = constructor.newInstance()
+        annotationParser.parse(instance)
     }
 
     fun close() {
@@ -71,7 +73,7 @@ class NeptuneCommandManager(module: NeptuneModule) {
         syncCommands()
     }
 
-    private fun syncCommands() {
+    fun syncCommands() {
         (Bukkit.getServer() as CraftServer).syncCommands()
     }
 

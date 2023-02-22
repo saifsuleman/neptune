@@ -1,6 +1,6 @@
 package net.saifs.neptune.menu
 
-import net.saifs.neptune.Neptune
+import net.saifs.neptune.NeptunePlugin
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
@@ -12,10 +12,10 @@ import org.bukkit.inventory.InventoryHolder
 import kotlin.math.ceil
 import kotlin.math.min
 
-class MenuManager : Listener {
+class MenuManager(plugin: NeptunePlugin) : Listener {
     init {
         val listener = MenuListener()
-        Neptune.instance.server.pluginManager.registerEvents(listener, Neptune.instance)
+        plugin.server.pluginManager.registerEvents(listener, plugin)
     }
 
     fun newMenu(size: Int = 54, block: MenuBuilder.() -> Unit) = Menu(size, block)
